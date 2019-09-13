@@ -1,8 +1,14 @@
 import cv2
 import requests
 import time
+import json
 
-URL = "http://localhost:8080/api/face_detection"
+application = None
+
+with open('../application.json') as json_file:
+    application = json.load(json_file)
+
+URL = application["api"]
 
 face_detector = cv2.CascadeClassifier('faceIndex.xml')
 
@@ -31,14 +37,14 @@ while True:
             cv2.rectangle(imageOfGrayScale, (x, y), (x + w, y + h), (255, 0 ,0), 2)
 
             try:
-                face_request = requests.post(url = URL, data = {})
+                face_request = requests.post(url = URL + '/face_detect', data = {})
                 faceData = face_request.json()
-                if (faceData['id'] == None):
+                if (faceData == None):
                     continue
 
-                print("index new photo", faceData['id'])
+                print("index new photo", faceData[0]['id'])
                 # write on bucked image
-                cv2.imwrite("../bucked/news/dataset." + str(faceData['id']) +".jpg", imageOfGrayScale[y : y + h, x : x + w])
+                cv2.imwrite("../bucked/news/dataset." + str(faceData[0]['id']) +".jpg", imageOfGrayScale[y : y + h, x : x + w])
             except:
                 print('backend not connected')
                 time.sleep(10)
