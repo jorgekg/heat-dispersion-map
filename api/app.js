@@ -1,22 +1,17 @@
 const express = require('express');
-const mariadb = require('mariadb');
-
-const FaceDetect = require('./src/controllers/face-detect');
-
 const fs = require('fs');
-const json = fs.readFileSync('../application.json');
 
+const FaceController = require('./controllers/face.controller');
+const PersonController = require('./controllers/person.controller');
+
+let json = fs.readFileSync('../application.json');
 let application = JSON.parse(json);
-
-const pool = mariadb.createPool({
-    host: application.host,
-    user: application.user,
-    connectionLimit: application.connectionLimit,
-    database: application.database
-});
 
 const app = express();
 
-new FaceDetect(app, pool);
+app.use(express.urlencoded({ extended: false }));
 
-app.listen(8090, () => console.log('api its working'));
+new FaceController(app);
+new PersonController(app);
+
+app.listen(application.port, application.host, () => console.log(`app its start on ${application.port}`));

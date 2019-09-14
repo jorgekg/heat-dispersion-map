@@ -1,8 +1,8 @@
 {
-    "api": "http://localhost:8090/api",
-    "host": "localhost",
-    "user": "root",
-    "password": "",
-    "database": "face",
-    "connectionLimit": "10"
+    "api": "http://localhost",
+    "port": "8090",
+    "host": "0.0.0.0",
+    "face": {
+        "recognition": 40
+    }
 }

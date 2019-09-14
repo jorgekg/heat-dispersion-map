@@ -6,10 +6,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "mariadb": "^2.1.1"
+    "install": "^0.13.0",
+    "mariadb": "^2.1.1",
+    "mysql2": "^1.7.0",
+    "sequelize": "^5.18.4"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^5.5.1"
   }
 }
