@@ -1,17 +1,81 @@
 const express = require('express');
+const mariadb = require('mariadb');
 const fs = require('fs');
-
-const FaceController = require('./controllers/face.controller');
-const PersonController = require('./controllers/person.controller');
+const bodyParser = require('body-parser');
 
 let json = fs.readFileSync('../application.json');
 let application = JSON.parse(json);
 
 const app = express();
 
+const pool = mariadb.createPool({
+  host: application.db.host,
+  user: application.db.user,
+  password: application.db.password,
+  database: 'faces',
+  connectionLimit: 10
+});
+
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
 app.use(express.urlencoded({ extended: false }));
 
-new FaceController(app);
-new PersonController(app);
+app.get('/api/face', async (req, res) => {
+  let item = {};
+  try {
+    const conn = await pool.getConnection();
+    const data = await conn.query('SELECT * FROM `faces`.`face` WHERE personId IS NULL LIMIT 1');
+    conn.end();
+    if (data.length > 0) {
+      item = data[0];
+    }
+  } catch (err) {
+    console.log(err)
+  }
+  res.send(item);
+});
+
+app.post('/api/face', async (req, res) => {
+  let item = 0;
+  try {
+    const conn = await pool.getConnection();
+    const data = await conn.query('INSERT INTO `faces`.`face` (`sync`) VALUES (0)');
+    conn.end();
+    item = data.insertId;
+  } catch (err) {
+    console.log(err)
+  }
+  res.send({
+    id: item
+  });
+});
+
+app.put('/api/face/:id', async (req, res) => {
+  try {
+    const conn = await pool.getConnection();
+    await conn.query('UPDATE `faces`.`face` SET `personId`= ' + req.body.personId + ' WHERE  `id`=' + req.params.id);
+    conn.end();
+  } catch (err) {
+    console.log(err)
+  }
+  res.send();
+});
+
+app.post('/api/person/:id', async (req, res) => {
+  let item = 0;
+  try {
+    const conn = await pool.getConnection();
+    const data = await conn.query('INSERT INTO `faces`.`person` (`data`) VALUES (0)');
+    await conn.query('UPDATE `faces`.`face` SET `personId`= ' + data.insertId + ' WHERE  `id`=' + req.params.id);
+    conn.end();
+    item = data.insertId;
+  } catch (err) {
+    console.log(err)
+  }
+  res.send({
+    id: item
+  });
+});
 
 app.listen(application.port, application.host, () => console.log(`app its start on ${application.port}`));

@@ -3,6 +3,11 @@
     "port": "8090",
     "host": "0.0.0.0",
     "face": {
-        "recognition": 40
+        "recognition": 50
+    },
+    "db": {
+        "host": "localhost",
+        "user": "root",
+        "password": ""
     }
 }
