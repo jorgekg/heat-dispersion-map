@@ -36,6 +36,21 @@ app.get('/api/face', async (req, res) => {
   res.send(item);
 });
 
+app.get('/api/face/gender_age', async (req, res) => {
+  let item = {};
+  try {
+    const conn = await pool.getConnection();
+    const data = await conn.query('SELECT * FROM `faces`.`face` WHERE gender IS NULL LIMIT 1');
+    conn.end();
+    if (data.length > 0) {
+      item = data[0];
+    }
+  } catch (err) {
+    console.log(err)
+  }
+  res.send(item);
+});
+
 app.post('/api/face', async (req, res) => {
   let item = 0;
   try {
@@ -54,7 +69,15 @@ app.post('/api/face', async (req, res) => {
 app.put('/api/face/:id', async (req, res) => {
   try {
     const conn = await pool.getConnection();
-    await conn.query('UPDATE `faces`.`face` SET `personId`= ' + req.body.personId + ' WHERE  `id`=' + req.params.id);
+    if (req.body.personId) {
+      await conn.query('UPDATE `faces`.`face` SET `personId`= ' + req.body.personId + ' WHERE  `id`=' + req.params.id);
+    }
+    if (req.body.gender) {
+      await conn.query('UPDATE `faces`.`face` SET `gender`= ' + req.body.gender + ' WHERE  `id`=' + req.params.id);
+    }
+    if (req.body.age) {
+      await conn.query('UPDATE `faces`.`face` SET `age`= ' + req.body.age + ' WHERE  `id`=' + req.params.id);
+    }
     conn.end();
   } catch (err) {
     console.log(err)

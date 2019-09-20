@@ -11,10 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "nodemon": "^1.19.2",
-    "ts-node": "^8.4.1",
-    "typescript": "^3.6.3",
     "@tensorflow/tfjs-node": "^1.2.3",
-    "canvas": "^2.5.0"
+    "canvas": "^2.5.0",
+    "nodemon": "^1.19.2",
+    "request": "^2.88.0",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.3"
   }
 }
