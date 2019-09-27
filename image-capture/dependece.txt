@@ -2,4 +2,5 @@ pip install opencv-python
 pip install requests
 pip install opencv-contrib-python
 pip install Pillow==2.1.0
+pip install PyMySQL
 Microsoft Visual C++ Build Tools

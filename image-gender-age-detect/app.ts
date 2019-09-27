@@ -1,50 +1,68 @@
 import * as faceapi from '../face-api.js/dist/face-api';
-const request = require('request');
-
+const mariadb = require('mariadb');
 const fs = require('fs');
 
 let json = fs.readFileSync('../application.json');
 let application = JSON.parse(json);
 
-import { canvas, faceDetectionNet, faceDetectionOptions, saveFile } from './commons';
+const pool = mariadb.createPool({
+  host: application.db.host,
+  user: application.db.user,
+  password: application.db.password,
+  database: 'faces',
+  connectionLimit: 10
+});
 
-async function run(faceData) {
+import { canvas, faceDetectionNet, faceDetectionOptions } from './commons';
 
-  await faceDetectionNet.loadFromDisk('../bucked/weights')
-  await faceapi.nets.faceLandmark68Net.loadFromDisk('../bucked/weights')
-  await faceapi.nets.ageGenderNet.loadFromDisk('../bucked/weights')
+const run = async (faceData) => {
+  console.log('loading image');
+  const img = await canvas.loadImage('../bucked/faces/dataset.' + faceData.id + '.jpg');
 
-  const img = await canvas.loadImage('../bucked/faces/dataset.' + faceData.id + '.jpg')
-  const [results] = await faceapi.detectAllFaces(img, faceDetectionOptions)
+  console.log('starting landmarks');
+  const results = await faceapi.detectAllFaces(img, faceDetectionOptions)
     .withFaceLandmarks()
     .withAgeAndGender() as any;
-  if (results) {
-    request({
-      url: `${application.api}:${application.port}/api/face`,
-      method: 'PUT',
-      json: { id: faceData.id, gender: results.gender, age: results.age }
-    })
-  } else {
-    request.put(`${application.api}:${application.port}/api/face/`+faceData.id,
-      {json: { id: faceData.id, gender: -1, age: -1 }},
-      (error, res, body) => {
-        if (error) {
-          console.error(error)
-          return
-        }
-        console.log(`statusCode: ${res.statusCode}`)
-        console.log(body)
+  if (results && results.length > 0) {
+    console.log('image landmarks landmarks detected');
+    const [result] = results;
+    return result;
+  }
+  console.log('image not landmarks');
+  return { gender: -1, age: -1 };
+
+}
+
+const getImages = async ()  => {
+  console.log('loaging weights');
+  await (faceDetectionNet as any).loadFromDisk('../bucked/weights')
+  await (faceapi.nets.faceLandmark68Net as any).loadFromDisk('../bucked/weights')
+  await (faceapi.nets.ageGenderNet as any).loadFromDisk('../bucked/weights')
+
+  while (true) {
+    console.log('------ starting new iteration -----')
+    try {
+      const conn = await pool.getConnection();
+      const data = await conn.query('SELECT * FROM `faces`.`face` WHERE gender IS NULL LIMIT 1');
+      if (data && data.length > 0) {
+        console.log('processing new image');
+        const genderAndAge = await run(data[0]);
+        await conn.query(
+          'UPDATE `faces`.`face` SET `gender`= "' + genderAndAge.gender + '", age = "' + genderAndAge.age + '" WHERE  `id`=' + data[0].id
+        );
+      } else {
+        console.log('all images processed');
+        await sleep(5000);
       }
-    )
+      conn.end();
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
 
-setInterval(() => {
-  console.log('nova iteração')
-  request.get(`${application.api}:${application.port}/api/face/gender_age`, { json: true }, (err, res, body) => {
-    if (body) {
-      console.log(body);
-      run(body).then().catch(err => console.log(err));
-    }
-  });
-}, 1000);
+const sleep = async (time) => {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
+
+getImages().then().catch(err => console.log(err));

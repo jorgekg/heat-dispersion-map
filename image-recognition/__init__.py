@@ -5,6 +5,7 @@ import time
 import json
 from PIL import Image
 import os
+import pymysql
 
 recognizer = cv2.face.LBPHFaceRecognizer_create()
 
@@ -22,118 +23,119 @@ application = None
 with open('../application.json') as json_file:
     application = json.load(json_file)
 
-# denined api end point
-api = application["api"] + ':' + application['port'] + '/api'
+bd = pymysql.connect(host=application['db']['host'],
+                     user=application['db']['user'],
+                     password=application['db']['password'],
+                     db='faces',
+                     cursorclass=pymysql.cursors.DictCursor)
 
 while True:
     try:
         # get next face
-        face_request = requests.get(url=api + '/face')
-        face = face_request.json()
+        cursor = bd.cursor()
+        cursor.execute(
+            'SELECT * FROM `faces`.`face` WHERE personId IS NULL LIMIT 1')
+        face = cursor.fetchone()
         # verify face exists
-        if (face == {}):
+        if (face == None):
             print('all images proccessed')
             # await 3 seconds for next iteration
-            time.sleep(3)
-            continue
-    except:
-        print('backend failed connection for face next')
-        time.sleep(5)
-        continue
-
-    # get image of bucked
-    imagePath = "../bucked/faces/dataset." + str(face['id']) + ".jpg"
-
-    # read image
-    img = cv2.imread(imagePath, 0)
-
-    # read face on multiscale
-    faces = faceCascade.detectMultiScale(img, 1.1, 5)
-    if (len(faces) == 0):
-
-        # update face with recognizer face
-        try:
-            print('update face ' + str(face['id']) + ' to person ' + str(0))
-            person_reques = requests.put(
-                url=api + '/face/' + str(face['id']), json={"personId": str(0)})
-            print('image updated')
-        except:
-            print('backend failed connection for person id update')
             time.sleep(5)
             continue
 
-    for(x, y, w, h) in faces:
+        # get image of bucked
+        imagePath = "../bucked/faces/dataset." + str(face['id']) + ".jpg"
 
-        print('face detected: ' + str(face['id']))
+        # read image
+        img = cv2.imread(imagePath, 0)
 
-        # get image face
-        predict = img[(y - 80): (y + h) + 80, (x - 20): (x + w) + 20]
+        # read face on multiscale
+        faces = faceCascade.detectMultiScale(img, 1.1, 5)
+        if (len(faces) == 0):
 
-        id = 0
-        conf = 0
-
-        try:
-            # get recognition
-            id, conf = recognizer.predict(predict)
-        except:
-            print('recognition fail')
-            person_reques = requests.put(
-                    url=api + '/face/' + str(face['id']), json={"personId": str(0)})
-
-        if (conf > application['face']['recognition']):
-
-            inverterPredict = cv2.flip(predict, 1)
-            id, conf = recognizer.predict(inverterPredict)
-
-        print("id: " + str(id) + " - face confidence: " + str(conf))
-
-        # verify confiability of face recognition
-        if (conf > application['face']['recognition']):
-
-            print('starting new index')
-
-            person = None
-
-            # generate new traning
-            try:
-                # create new person
-                person_request = requests.post(
-                    url=api + '/person/' + str(face['id']))
-                person = person_request.json()
-
-                # verify exists person
-                if (person == None):
-                    # await 3 seconds for next iterations
-                    time.sleep(3)
-                    continue
-            except:
-                print('backend failed connection for api person')
-                time.sleep(5)
-                continue
-
-            print('indexing person ' + str(person['id']))
-            # update training with new image
-            recognizer.update([predict], np.array([person['id']]))
-
-            # save and load new training
-            recognizer.save('../bucked/train.yml')
-            recognizer.read('../bucked/train.yml')
-
-            # save face recognized
-            cv2.imwrite("../bucked/people/person." +
-                        str(person['id']) + ".jpg", predict)
-        else:
             # update face with recognizer face
             try:
-                print('update face ' +
-                      str(face['id']) + ' to person ' + str(id))
-                person_reques = requests.put(
-                    url=api + '/face/' + str(face['id']), json={"personId": str(id)})
-                print('image updated')
+                print('Not face detected ' + str(face['id']) + ' to person - 1')
+                cursor.execute('UPDATE `faces`.`face` SET `personId`= -1 WHERE  `id`=' + str(face['id']))
+                bd.commit()
             except:
-                print('backend failed connection for person id update')
-                time.sleep(5)
+                bd.rollback()
                 continue
 
-    if cv2.waitKey(10) & 0xFF == ord('q'):
-        break
+        for(x, y, w, h) in faces:
+
+            print('face detected: ' + str(face['id']))
+
+            # get image face
+            predict = img[(y - 40): (y + h) + 40, (x - 20): (x + w) + 20]
+
+            id = 0
+            conf = 0
+
+            try:
+                # get recognition
+                id, conf = recognizer.predict(predict)
+            except:
+                print('recognition fail')
+                cursor.execute('UPDATE `faces`.`face` SET `personId`= -1 WHERE  `id`=' + str(face['id']))
+                bd.commit()
+                continue
+
+            if (conf > application['face']['recognition']):
+
+                inverterPredict = cv2.flip(predict, 1)
+                id, conf = recognizer.predict(inverterPredict)
+
+            print("id: " + str(id) + " - face confidence: " + str(conf))
+
+            # verify confiability of face recognition
+            if (conf > application['face']['recognition']):
+
+                print('starting new index')
+
+                person = None
+
+                # generate new traning
+                try:
+                    # create new person
+                    cursor.execute('INSERT INTO `faces`.`person` (`data`) VALUES (0)')
+                    bd.commit()
+                    cursor.execute('SELECT MAX(id) AS id FROM person')
+                    person = cursor.fetchone()
+                except:
+                    bd.rollback()
+                    print('backend failed connection for api person')
+                    continue
+
+                if (person == None):
+                    continue
+                print('indexing person ' + str(person['id']))
+                # update training with new image
+                recognizer.update([predict], np.array([person['id']]))
+
+                # save and load new training
+                recognizer.save('../bucked/train.yml')
+                recognizer.read('../bucked/train.yml')
+
+                # save face recognized
+                cv2.imwrite("../bucked/people/person." +
+                            str(person['id']) + ".jpg", predict)
+            else:
+                # update face with recognizer face
+                try:
+                    print('update face ' +
+                          str(face['id']) + ' to person ' + str(id))
+                    cursor.execute('UPDATE `faces`.`face` SET `personId`= ' + str(id) + ' WHERE  `id`=' + str(face['id']))
+                    bd.commit()
+                except:
+                    bd.rollback()
+                    print('backend failed for person id update')
+                    continue
+        cursor.close()
+        if cv2.waitKey(10) & 0xFF == ord('q'):
+            break
+    except:
+        bd.rollback()
+        print('backend failed connection for face next')
+        time.sleep(5)
+        continue

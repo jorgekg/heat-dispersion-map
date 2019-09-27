@@ -13,9 +13,13 @@
   "dependencies": {
     "@tensorflow/tfjs-node": "^1.2.3",
     "canvas": "^2.5.0",
+    "mariadb": "^2.1.1",
     "nodemon": "^1.19.2",
     "request": "^2.88.0",
     "ts-node": "^8.4.1",
     "typescript": "^3.6.3"
+  },
+  "devDependencies": {
+    "@types/node": "^12.7.8"
   }
 }

@@ -51,6 +51,21 @@ app.get('/api/face/gender_age', async (req, res) => {
   res.send(item);
 });
 
+app.get('/api/face/expression', async (req, res) => {
+  let item = {};
+  try {
+    const conn = await pool.getConnection();
+    const data = await conn.query('SELECT * FROM `faces`.`face` WHERE expression IS NULL LIMIT 1');
+    conn.end();
+    if (data.length > 0) {
+      item = data[0];
+    }
+  } catch (err) {
+    console.log(err)
+  }
+  res.send(item);
+});
+
 app.post('/api/face', async (req, res) => {
   let item = 0;
   try {
@@ -77,6 +92,9 @@ app.put('/api/face/:id', async (req, res) => {
     }
     if (req.body.age) {
       await conn.query('UPDATE `faces`.`face` SET `age`= ' + req.body.age + ' WHERE  `id`=' + req.params.id);
+    }
+    if (req.body.expression) {
+      await conn.query('UPDATE `faces`.`face` SET `expression`= ' + req.body.expression + ' WHERE  `id`=' + req.params.id);
     }
     conn.end();
   } catch (err) {
