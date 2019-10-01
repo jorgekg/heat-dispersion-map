@@ -32,14 +32,13 @@ camera = cv2.VideoCapture(0)
 
 first = True
 
-bd = pymysql.connect(host=application['db']['host'],
-                     user=application['db']['user'],
-                     password=application['db']['password'],
-                     db='faces',
-                     cursorclass=pymysql.cursors.DictCursor)
-
 while True:
     try:
+        bd = pymysql.connect(host=application['db']['host'],
+                             user=application['db']['user'],
+                             password=application['db']['password'],
+                             db='faces',
+                             cursorclass=pymysql.cursors.DictCursor)
         # get imediate image
         status, image = camera.read()
 
@@ -65,7 +64,8 @@ while True:
                     cursor = bd.cursor()
                     cursor.execute('SELECT MAX(id) + 1 AS id FROM face')
                     faceData = cursor.fetchone()
-                    cursor.execute('INSERT INTO `faces`.`face` (`sync`) VALUES (0)')
+                    cursor.execute(
+                        'INSERT INTO `faces`.`face` (`sync`) VALUES (0)')
                     print("index new photo", faceData['id'])
                     # write on bucked image
                     cv2.imwrite("../bucked/faces/dataset." + str(
@@ -76,6 +76,6 @@ while True:
                     bd.rollback()
                     print('not write face or not save on disk')
                     time.sleep(10)
-            bd.close()
+        bd.close()
     except:
         print('ocurre a internal erro')
