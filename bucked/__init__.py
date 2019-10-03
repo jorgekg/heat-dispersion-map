@@ -35,6 +35,7 @@ while True:
         cursor.execute(
             'SELECT * FROM `faces`.`face` WHERE personId IS NULL LIMIT 1')
         face = cursor.fetchone()
+        print(face)
         # verify face exists
         if (face == None):
             print('all images proccessed')
@@ -117,6 +118,7 @@ while True:
 
                     # save and load new training
                     recognizer.save('../bucked/train.yml')
+                    recognizer.read('../bucked/train.yml')
 
                     # save face recognized
                     cv2.imwrite("../bucked/people/person." +

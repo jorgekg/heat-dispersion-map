@@ -17,8 +17,12 @@ import { canvas, faceDetectionNet, faceDetectionOptions } from './commons';
 
 const run = async (faceData) => {
   console.log('loading image');
-  const img = await canvas.loadImage('../bucked/faces/dataset.' + faceData.id + '.jpg');
-
+  let img;
+  try {
+    img = await canvas.loadImage('../bucked/faces/dataset.' + faceData.id + '.jpg');
+  } catch (err) {
+    return { gender: -1, age: -1 }
+  }
   console.log('starting landmarks');
   const results = await faceapi.detectAllFaces(img, faceDetectionOptions)
     .withFaceLandmarks()

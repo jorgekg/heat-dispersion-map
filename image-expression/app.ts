@@ -18,8 +18,15 @@ const pool = mariadb.createPool({
 import { canvas, faceDetectionNet, faceDetectionOptions } from './commons';
 
 const run = async (faceData) => {
-
-  const img = await canvas.loadImage('../bucked/faces/dataset.' + faceData.id + '.jpg')
+  let img;
+  try {
+    img = await canvas.loadImage('../bucked/faces/dataset.' + faceData.id + '.jpg')
+  } catch (err) {
+    return {
+      key: -1,
+      confidence: -1
+    }
+  }
   const results = await faceapi.detectAllFaces(img, faceDetectionOptions)
     .withFaceLandmarks()
     .withFaceExpressions() as any;

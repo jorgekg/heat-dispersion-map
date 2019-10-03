@@ -66,7 +66,7 @@ while True:
                     faceData = cursor.fetchone()
                     cursor.execute(
                         'INSERT INTO `faces`.`face` (`sync`) VALUES (0)')
-                    print("index new photo", faceData['id'])
+                    print("Face detected saved ", faceData['id'])
                     # write on bucked image
                     cv2.imwrite("../bucked/faces/dataset." + str(
                         faceData['id']) + ".jpg", imageOfGrayScale[(y - 40): (y + h) + 40, (x - 20): (x + w) + 20])
@@ -79,3 +79,4 @@ while True:
         bd.close()
     except:
         print('ocurre a internal erro')
+        time.sleep(1)
