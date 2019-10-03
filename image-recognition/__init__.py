@@ -9,9 +9,9 @@ import pymysql
 
 recognizer = cv2.face.LBPHFaceRecognizer_create()
 
-recognizer.read('../bucked/train.yml')
+recognizer.read('bucked/train.yml')
 
-cascadePath = "../bucked/faceIndex.xml"
+cascadePath = "bucked/faceIndex.xml"
 
 faceCascade = cv2.CascadeClassifier(cascadePath)
 
@@ -20,7 +20,7 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 application = None
 
 # read application properties
-with open('../application.json') as json_file:
+with open('application.json') as json_file:
     application = json.load(json_file)
 
 while True:
@@ -42,7 +42,7 @@ while True:
             time.sleep(5)
         else:
             # get image of bucked
-            imagePath = "../bucked/faces/dataset." + str(face['id']) + ".jpg"
+            imagePath = "bucked/faces/dataset." + str(face['id']) + ".jpg"
 
             # read image
             img = cv2.imread(imagePath, 0)
@@ -116,10 +116,10 @@ while True:
                     recognizer.update([predict], np.array([person['id']]))
 
                     # save and load new training
-                    recognizer.save('../bucked/train.yml')
+                    recognizer.save('bucked/train.yml')
 
                     # save face recognized
-                    cv2.imwrite("../bucked/people/person." +
+                    cv2.imwrite("bucked/people/person." +
                                 str(person['id']) + ".jpg", predict)
                 else:
                     # update face with recognizer face

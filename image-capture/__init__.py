@@ -21,11 +21,11 @@ def adjust_gamma(image, gamma=1):
 application = None
 
 # app applications
-with open('../application.json') as json_file:
+with open('application.json') as json_file:
     application = json.load(json_file)
 
 # load CascadeClassifier
-face_detector = cv2.CascadeClassifier('../bucked/faceIndex.xml')
+face_detector = cv2.CascadeClassifier('bucked/faceIndex.xml')
 
 # get straming of camera
 camera = cv2.VideoCapture(0)
@@ -68,7 +68,7 @@ while True:
                         'INSERT INTO `faces`.`face` (`sync`) VALUES (0)')
                     print("Face detected saved ", faceData['id'])
                     # write on bucked image
-                    cv2.imwrite("../bucked/faces/dataset." + str(
+                    cv2.imwrite("bucked/faces/dataset." + str(
                         faceData['id']) + ".jpg", imageOfGrayScale[(y - 40): (y + h) + 40, (x - 20): (x + w) + 20])
                     bd.commit()
                     time.sleep(0.5)

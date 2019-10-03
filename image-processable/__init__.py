@@ -7,7 +7,7 @@ import cv2
 application = None
 
 # read application properties
-with open('../application.json') as json_file:
+with open('application.json') as json_file:
     application = json.load(json_file)
 
 while True:
@@ -35,7 +35,7 @@ while True:
                     str(face['id'])
                 cursor.execute(query)
             try:
-                imagePath = "../bucked/faces/dataset." + \
+                imagePath = "bucked/faces/dataset." + \
                     str(face['id']) + ".jpg"
                 os.remove(imagePath)
             except:
