@@ -1,7 +1,5 @@
 {
-    "api": "http://localhost",
-    "port": "8090",
-    "host": "0.0.0.0",
+    "secret_key": "",
     "face": {
         "recognition": 50
     },
