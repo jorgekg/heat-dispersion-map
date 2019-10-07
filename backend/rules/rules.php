@@ -1,5 +1,5 @@
 <?php
 
 $rules = [
-  ['/api/login', LoginController::class, 'generateToken', 'users/login.controller.php']
+  '/api/login' => [LoginController::class, 'generateToken', 'platform/users/login.controller.php']
 ];

@@ -1,23 +1,27 @@
 <?php
 
-require_once __DIR__ . '/../platform.model.php';
+/** @table = user, @database = platform */
+class User {
 
-/** @table = user */
-class UserModel extends Platform {
+    /** @id = true, @type = int, @auto = true */
+    public $id;
 
-    /** @type int */
-    private $id;
-
-    /** @type string */
-    private $name;
+    /** @type = varchar, @max = 50 */
+    public $name;
     
-    /** @type string */
-    private $email;
+    /** @type = varchar, @max = 255 */
+    public $email;
 
-    /** @type string */
-    private $password;
+    /** @type = varchar, @max = 255 */
+    public $password;
 
-    /** @type int */
-    private $companyId;
+    /** @type = int, @nullable = true, @target = company*/
+    public $companyId;
+
+    /** @type = datetime, @nullable = true */
+    public $createAt;
+
+    /** @type = datetime, @nullable = true, @default = date() */
+    public $updateAt;
 
 }
