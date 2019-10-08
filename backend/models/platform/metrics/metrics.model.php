@@ -18,7 +18,10 @@ class Metrics {
     /** @type = varchar, @max = 255, nullable = true */
     public $platform;
 
-    /** @type = datetime, nullable = true */
+    /** @type = varchar, @max = 255, nullable = true */
+    public $ip;
+
+    /** @type = datetime, nullable = true, @default = date */
     public $createAt;
 
 }

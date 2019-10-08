@@ -3,10 +3,20 @@
 abstract class Repository
 {
   protected $table;
+  protected $class;
+  protected $database;
+
+  public function __construct($class)
+  {
+    $this->class = $class;
+    $instance = new ReflectionClass($this->class);
+    $this->table = Utils::getAnnotation($instance->getDocComment(), '@table');
+    $this->database = Utils::getAnnotation($instance->getDocComment(), '@database');
+  }
 
   public function findById($id)
   {
-    $prepare = Database::getInstance()->prepare("SELECT * FROM {$this->table} WHERE id = ?");
+    $prepare = (Database::instance($this->database))->prepare("SELECT * FROM {$this->table} WHERE id = ?");
     $prepare->bindValue(1, $id);
     $prepare->execute();
     return $prepare->fetchAll(PDO::FETCH_ASSOC);
@@ -16,14 +26,14 @@ abstract class Repository
   {
     $init = $size * $page;
     $finish = $size * ($page + 1);
-    $prepare = Database::getInstance()->prepare("SELECT * FROM {$this->table} {$filter} LIMIT {$init}, {$finish}");
+    $prepare = (Database::instance($this->database))->prepare("SELECT * FROM {$this->table} {$filter} LIMIT {$init}, {$finish}");
     $prepare->execute();
     return $prepare->fetchAll(PDO::FETCH_ASSOC);
   }
 
   public function insert($data)
   {
-    $reflection = new ReflectionClass($this->table);
+    $reflection = new ReflectionClass($this->class);
     $fields = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
     $processFields = array_filter(array_map(function ($field) {
       if ($field->name != 'id')
@@ -36,14 +46,14 @@ abstract class Repository
     $query .= ') VALUES (' . join(', ', array_map(function ($field) {
       return '?';
     }, $processFields)) . ')';
-    $prepare = Database::getInstance()->prepare($query);
+    $prepare = (Database::instance($this->database))->prepare($query);
     $index = 1;
     foreach ($processFields as $key) {
       $prepare->bindValue($index, $data->$key);
       $index++;
     }
     $prepare->execute();
-    return $this->findById(Database::getInstance()->lastInsertId());
+    return $this->findById((Database::instance($this->database))->lastInsertId());
   }
 
   public function delete($id)
@@ -52,7 +62,7 @@ abstract class Repository
     if (empty($item)) {
       throw new NotFoundException('This item not exists');
     }
-    $prepare = Database::getInstance()->prepare("DELETE FROM {$this->table} WHERE id = ?");
+    $prepare = (Database::instance($this->database))->prepare("DELETE FROM {$this->table} WHERE id = ?");
     $prepare->bindValue(1, $id);
     $prepare->execute();
   }
@@ -75,7 +85,7 @@ abstract class Repository
       return !empty($field);
     }));
     $query .= " WHERE id = ?";
-    $prepare = Database::getInstance()->prepare($query);
+    $prepare = (Database::instance($this->database))->prepare($query);
     $index = 1;
     foreach ($fields as $field) {
       $field = $field->name;

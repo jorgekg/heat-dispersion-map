@@ -5,11 +5,9 @@ require_once __DIR__ . '/../../../models/platform/metrics/metrics.model.php';
 
 class MetricsRepository extends Repository {
 
-    public function __construct($database)
+    public function __construct()
     {
-        $this->database = $database;
-        $instance = new ReflectionClass(Metrics::class);
-        $this->table = Utils::getAnnotation($instance->getDocComment(), '@table');
+        parent::__construct(Metrics::class);
     }
 
 }

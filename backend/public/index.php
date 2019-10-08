@@ -7,12 +7,9 @@ require_once __DIR__ . '/../services/platform/metrics/metrics.service.php';
 require_once __DIR__ . '/../configs/utils.php';
 require_once __DIR__ . '/../configs/database.php';
 
-// Starting metrics analitics
-$metrics = new MetricsService();
 $path = '';
 
 try {
-  $db = (new Database())->instance();
   // get endpoit
   $path = !empty($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '/';
   $rule = isset($rules[$path]) ? $rules[$path] : null;
@@ -38,8 +35,8 @@ try {
 
 try {
   // start analictis
-  $db = (new Database('platform'))->instance();
-  $metrics->analyze($db, $path, $startMicrotime);
+  $metrics = new MetricsService();
+  $metrics->analyze($path, $startMicrotime);
 } catch (Exception $e) {
-  // hidden erros on analize
+  // ignore error metrics
 }

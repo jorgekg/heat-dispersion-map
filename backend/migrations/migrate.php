@@ -15,7 +15,7 @@ function readFiles($dir)
                     require_once($file);
                     $class = explode('.', $classFile)[0];
                     $instance = new ReflectionClass($class);
-                    $db = (new Database($database))->instance();
+                    $db = Database::instance();
                     if (!empty(getAnnotation($instance->getDocComment(), '@database'))) {
                         $database = getAnnotation($instance->getDocComment(), '@database');
                     }

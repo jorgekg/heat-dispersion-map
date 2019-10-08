@@ -2,16 +2,15 @@
 
 class Database
 {
-    private $instancePull;
+    private static $instancePull;
 
-    public function instance($database = 'platform') {
-        $this->instancePull = new PDO("mysql:host=localhost;dbname={$database}", "root", "");
-        $this->instancePull->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
-        $this->instancePull->setAttribute( PDO::ATTR_EMULATE_PREPARES, FALSE );
-        return $this->instancePull;
-    }
-
-    public function close() {
-        $this->instancePull->close();
+    public static function instance($database = 'platform') {
+        if (isset(self::$instancePull[$database])) {
+            return self::$instancePull[$database];
+        }
+        self::$instancePull[$database] = new PDO("mysql:host=localhost;dbname={$database}", "root", "");
+        self::$instancePull[$database]->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+        self::$instancePull[$database]->setAttribute( PDO::ATTR_EMULATE_PREPARES, FALSE );
+        return self::$instancePull[$database];
     }
 }
