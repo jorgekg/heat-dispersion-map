@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../repository.php';
-require_once __DIR__ . '/../../../models/platform/User/user.model.php';
+require_once __DIR__ . '/../../../models/platform/user/user.model.php';
 
 class UserRepository extends Repository {
 

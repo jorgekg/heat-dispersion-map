@@ -1,18 +1,16 @@
 <?php
 
+require_once __DIR__ . '/../../../configs/utils.php';
+require_once __DIR__ . '/../../../models/platform/user/user.model.php';
 require_once __DIR__ . '/../../../services/platform/user/user.service.php';
+require_once __DIR__ . '/../../controller.php';
 
-class UserController {
-
-    private $userService;
+class UserController extends Controller {
 
     public function __construct()
     {
-        $this->userService = new UserService();
-    }
-
-    public function create($queries = null, $body = null, $headers = null) {
-        return $this->userService.create($body);
+        $this->service = new UserService();
+        $this->class = User::class;
     }
 
 }

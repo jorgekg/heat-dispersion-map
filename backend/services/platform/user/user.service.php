@@ -15,4 +15,12 @@ class UserService {
         return $this->userRepository->create($user);
     } 
 
+    public function list($page = 0, $size = 10) {
+        return $this->userRepository->list($page, $size);
+    }
+
+    public function findById($id) {
+        return $this->userRepository->findById($id);
+    }
+
 }

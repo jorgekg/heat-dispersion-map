@@ -19,7 +19,7 @@ abstract class Repository
     $prepare = (Database::instance($this->database))->prepare("SELECT * FROM {$this->table} WHERE id = ?");
     $prepare->bindValue(1, $id);
     $prepare->execute();
-    return $prepare->fetchAll(PDO::FETCH_ASSOC);
+    return $prepare->fetch(PDO::FETCH_ASSOC);
   }
 
   public function list($page = 0, $size = 10, $filter = '')
