@@ -55,7 +55,7 @@ try {
     }
   }
 } catch (Exception $e) {
-  print_r($e);
+  Utils::printError($e);
 }
 
 try {

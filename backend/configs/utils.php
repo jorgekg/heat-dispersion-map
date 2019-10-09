@@ -1,5 +1,8 @@
 <?php
 
+require_once __DIR__ . '/../exceptions/not-found.exception.php';
+require_once __DIR__ . '/../exceptions/not-implementation.exception.php';
+
 class Utils {
 
     public static function getAnnotation($annotations, $annotation)
@@ -23,6 +26,16 @@ class Utils {
 
     public static function getPageAndSize($query) {
         return [(isset($query['page']) ? $query['page'] : 0), (isset($query['offset']) ? $query['offset'] : 10)];
+    }
+
+    public static function printError($error) {
+        if ($error instanceof NotFoundException) {
+            http_response_code($error->getCode());
+            echo $error->getMessage();
+        } else if ($error instanceof NotImplmentationException) {
+            http_response_code($error->getCode());
+            echo $error->getMessage();
+        }
     }
 
 }
