@@ -18,8 +18,8 @@ class Utils {
         $reflection = new ReflectionClass($class);
         $fields = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
         $instance = new $class();
-        foreach ($$fields as $field) {
-            $instance->$field = isset($data[$field]) ? $data[$field] : null;
+        foreach ($fields as $field) {
+            $instance->$field = isset($data[$field->name]) ? $data[$field->name] : null;
         }
         return $instance;
     }

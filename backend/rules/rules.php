@@ -1,6 +1,6 @@
 <?php
 
 $rules = [
-  '/api/login' => [LoginController::class, 'platform/users/login.controller.php'],
+  '/api/login' => [TokenController::class, 'platform/users/token.controller.php'],
   '/api/users' => [UserController::class, 'platform/users/user.controller.php']
 ];

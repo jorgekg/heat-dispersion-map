@@ -24,11 +24,11 @@ try {
     }
   }
   if (empty($rule)) {
-    http_response_code(404);
+    throw new NotImplmentationException();
   }
   if (!empty($rule)) {
     require_once __DIR__ . '/../controllers/' . $rule[1];
-    
+
     // create instance of controller
     $class = $rule[0];
     $instance = new $class();
@@ -43,7 +43,9 @@ try {
       $route = $pathStr . ($endpoint == '/' ? '' : $endpoint);
       if ($_SERVER['PATH_INFO'] == $route && strtoupper($methodRequest) == $_SERVER['REQUEST_METHOD']) {
         $callMethod = $method->name;
-        $response = $instance->$callMethod($_SERVER['REQUEST_METHOD'] == 'POST' ? $_POST : $_GET, $_SERVER);
+        $response = $instance->$callMethod($_SERVER['REQUEST_METHOD'] == 'POST'
+          ? json_decode(file_get_contents('php://input'), true)
+          : $_GET, $_SERVER);
         echo json_encode($response);
         http_response_code(200);
         $hasEndpoint = true;
@@ -51,7 +53,7 @@ try {
       }
     }
     if (!$hasEndpoint) {
-      http_response_code(404);
+      throw new NotImplmentationException();
     }
   }
 } catch (Exception $e) {
