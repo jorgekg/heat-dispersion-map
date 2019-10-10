@@ -1,0 +1,36 @@
+<ion-content>
+  <div class="row" style="height: 100%">
+    <div class="col-md-5 d-flex">
+      <div class="align-self-center mr-auto" style="width: 100%">
+        <h1 style="text-align: center; font-size: 30px; color: #666666"><b>Acesse sua conta</b></h1>
+        <hr style="border-bottom: solid 1px #cccccc">
+        <form [formGroup]="formGroup" class="col-md-8 offset-md-2">
+          <ion-item>
+            <ion-label position="floating">Digite seu E-mail</ion-label>
+            <ion-input formControlName="email" type="email" name="email"></ion-input>
+          </ion-item>
+          <app-validator [control]="formGroup.get('email')"></app-validator>
+          <ion-item>
+            <ion-label position="floating">Digite sua senha</ion-label>
+            <ion-input formControlName="password" type="password" name="password"></ion-input>
+          </ion-item>
+          <app-validator [control]="formGroup.get('password')"></app-validator>
+          <br>
+          <div class="col-md-8 offset-md-2">
+            <ion-button (click)="login()" type="submit" expand="block" color="primary">{{btnLogin}}</ion-button>
+          </div>
+          <br>
+          <p style="font-size: 15px; text-align: center">Não possui conta? <a
+              [routerLink]="['/create-account']">cadastre-se</a></p>
+        </form>
+      </div>
+    </div>
+    <div class="col-md-7 d-flex" style="background: linear-gradient(-45deg, #2A20AC, #6861CE) !important  ">
+      <div class="align-self-center mr-auto" style="width: 100%">
+        <h1 style="text-align: center; font-size: 30px; color: #ffffff"><b>Bem vindo a J-SIS</b></h1>
+        <h2 style="text-align: center; font-size: 20px; color: #eeeeee">Realize o login para começar a utilizar seus
+          serviços.</h2>
+      </div>
+    </div>
+  </div>
+</ion-content>

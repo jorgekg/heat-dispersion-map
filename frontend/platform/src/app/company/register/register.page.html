@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>{{isNew() ? 'Criar' : 'Atualizar'}} sua empresa</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="company"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div class="row" style="height: 100%">
+    <div class="col-md-12 d-flex">
+      <div class="align-self-center mr-auto" style="width: 100%">
+        <form [formGroup]="formGroup" class="col-md-8 offset-md-2">
+          <div class="row">
+            <div class="col-md-6">
+              <ion-item>
+                <ion-label position="floating">Digite a razão social</ion-label>
+                <ion-input formControlName="name" type="text" name="name"></ion-input>
+              </ion-item>
+              <app-validator [control]="formGroup.get('name')"></app-validator>
+            </div>
+            <div class="col-md-6">
+              <ion-item>
+                <ion-label position="floating">Digite o nome fantasia</ion-label>
+                <ion-input formControlName="fantasyName" type="text" name="fantasyName"></ion-input>
+              </ion-item>
+              <app-validator [control]="formGroup.get('fantasyName')"></app-validator>
+            </div>
+          </div>
+          <br>
+          <div class="col-md-4 offset-md-4">
+            <br>
+            <ion-button (click)="save()" type="submit" expand="block" color="primary">{{btnCompany}}</ion-button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</ion-content>

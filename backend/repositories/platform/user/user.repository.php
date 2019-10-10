@@ -11,14 +11,15 @@ class UserRepository extends Repository {
         parent::__construct(User::class);
     }
 
-    public function findByEmail($email) {
-        $stmt = (Database::instance($this->database))->prepare('SELECT * FROM ' . $this->table . ' where email = ?');
+    public function findByEmail($email): User {
+        $stmt = (Database::instance($this->database))->prepare('SELECT * FROM ' . $this->table . ' WHERE email = ?');
         $stmt->bindValue(1, $email);
         $stmt->execute();
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         if (empty($user)) {
             throw new NotFoundException('Email not exists');
         }
+        return Utils::instanceClass($this->class, $user);
     }
 
 }

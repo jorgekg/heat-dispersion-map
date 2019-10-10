@@ -1,7 +1,8 @@
 <?php
 
 /** @table = token, @database = platform */
-class Token {
+class Token
+{
 
     public function __construct($id = null, $userId = null, $token = null, $companyId = null, $createAt = null)
     {
@@ -21,10 +22,9 @@ class Token {
     /** @type = varchar, @max = 255 */
     public $token;
 
-    /** @type = int, @target = company*/
+    /** @type = int, @target = company, @nullable = true */
     public $companyId;
 
     /** @type = datetime, @nullable = true */
     public $createAt;
-
 }

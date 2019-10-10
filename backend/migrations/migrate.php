@@ -2,6 +2,10 @@
 
 require_once __DIR__ . '/../configs/database.php';
 
+class Resources {
+    public static $resource = [];
+}
+
 function readFiles($dir)
 {
     $database = '';
@@ -25,9 +29,10 @@ function readFiles($dir)
                                         FROM information_schema.tables
                                         WHERE table_schema = "' . $database . '" 
                                         AND table_name = "' . $table . '"')
-                                        -> fetch(PDO::FETCH_ASSOC);
+                            ->fetch(PDO::FETCH_ASSOC);
                         if (empty($tableName)) {
                             echo 'Criando a tabela = ' . $database . '.' . $table . '' . chr(10);
+                            Resources::$resource[] = $table;
                             $createTable = 'CREATE TABLE ' . $table . ' (';
                             foreach ($instance->getProperties() as $property) {
                                 $createTable .= createField($property) . ', ';
@@ -38,9 +43,7 @@ function readFiles($dir)
                             echo $createTable .= ')';
                             $db->exec($createTable);
                             echo 'Tabela ' . $table . ' criada com sucesso';
-                        } else {
-                            
-                        }
+                        } else { }
                     }
                 }
             }
@@ -82,6 +85,12 @@ function getAnnotation($annotations, $annotation)
 echo 'Iniciando o script de migração ' . chr(10);
 try {
     readFiles(__DIR__ . '/../models');
+    $db = Database::instance();
+    foreach (Resources::$resource as $resource) {
+        $stmt = $db->prepare('INSERT INTO permission (resource) values(?)');
+        $stmt->bindValue(1, $resource);
+        $stmt->execute();
+    }
 } catch (Exception $e) {
     print_r($e->getMessage());
 }

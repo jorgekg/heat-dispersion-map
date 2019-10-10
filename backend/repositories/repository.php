@@ -19,7 +19,7 @@ abstract class Repository
     $prepare = (Database::instance($this->database))->prepare("SELECT * FROM {$this->table} WHERE id = ?");
     $prepare->bindValue(1, $id);
     $prepare->execute();
-    return $prepare->fetch(PDO::FETCH_ASSOC);
+    return Utils::instanceClass($this->class, $prepare->fetch(PDO::FETCH_ASSOC));
   }
 
   public function list($page = 0, $size = 10, $filter = '')
@@ -31,7 +31,7 @@ abstract class Repository
     return $prepare->fetchAll(PDO::FETCH_ASSOC);
   }
 
-  public function insert($data)
+  public function create($data)
   {
     $reflection = new ReflectionClass($this->class);
     $fields = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
@@ -94,7 +94,7 @@ abstract class Repository
         $index++;
       }
     }
-    $prepare->bindValue(count($fields), $id);
+    $prepare->bindValue(count($fields) - 1, $id);
     $prepare->execute();
     return $this->findById($id);
   }

@@ -1,8 +1,8 @@
 <?php
 
 /** @table = company, @database = platform */
-class Company {
-
+class Company
+{
     /** @id = true, @auto = true, @type = int */
     public $id;
 
@@ -17,5 +17,4 @@ class Company {
 
     /** @type = datetime, @nullable = true, @default = date() */
     public $updateAt;
-
 }

@@ -1,7 +1,8 @@
 <?php
 
 /** @table = metrics, @database = platform */
-class Metrics {
+class Metrics
+{
 
     /** @id = true, @auto = true, @type = BIGINT */
     public $id;
@@ -23,5 +24,4 @@ class Metrics {
 
     /** @type = datetime, nullable = true, @default = date */
     public $createAt;
-
 }

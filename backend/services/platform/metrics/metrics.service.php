@@ -18,7 +18,7 @@ class MetricsService {
         $metrics->ip = $_SERVER['REMOTE_ADDR'];
 
         $metrics->endpoint = $endpoint; 
-        $repository->insert($metrics);
+        $repository->create($metrics);
     }
 
 }

@@ -1,12 +1,14 @@
 <?php
 
-abstract class Controller {
+abstract class Controller
+{
 
     protected $class;
     protected $service;
 
     /** @method = get, @route = / */
-    public function get($query = null, $headers = null) {
+    public function get($query = null, $headers = null)
+    {
         $reflaction = new ReflectionClass($this);
         if ($reflaction->hasMethod('getOverride')) {
             return $this->getOverride($query, $headers);
@@ -17,24 +19,29 @@ abstract class Controller {
     }
 
     /** @method = get, @route = /list */
-    public function list($query = null, $headers = null) {
+    public function list($query = null, $headers = null)
+    {
         $reflaction = new ReflectionClass($this);
         if ($reflaction->hasMethod('listOverride')) {
             return $this->listOverride($query, $headers);
-        } else { 
+        } else {
             $pageAndSize = Utils::getPageAndSize($query);
             return $this->service->list($pageAndSize[0], $pageAndSize[1]);
         }
     }
 
     /** @method = post, @route = / */
-    public function create($data = null, $headers = null) {
+    public function create($data = null, $headers = null)
+    {
         $reflaction = new ReflectionClass($this);
         if ($reflaction->hasMethod('createOverride')) {
-            return $this->createOverride(Utils::instanceClass($this->class, $data), $headers);
+            return $this->createOverride($data, $headers);
         } else {
-            return $this->service.create(Utils::instanceClass($this->class, $data));
+            $instance = Utils::instanceClass($this->class, $data);
+            if ($reflaction->hasMethod('createValidation')) {
+                $this->createValidation($instance);
+            }
+            return $this->service->create($instance);
         }
     }
-
 }

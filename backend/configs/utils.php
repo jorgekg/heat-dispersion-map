@@ -19,7 +19,8 @@ class Utils {
         $fields = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
         $instance = new $class();
         foreach ($fields as $field) {
-            $instance->$field = isset($data[$field->name]) ? $data[$field->name] : null;
+            $property = $field->name;
+            $instance->$property = isset($data[$property]) ? $data[$property] : null;
         }
         return $instance;
     }
@@ -29,12 +30,12 @@ class Utils {
     }
 
     public static function printError($error) {
-        if ($error instanceof NotFoundException) {
-            http_response_code($error->getCode());
+        try {
             echo $error->getMessage();
-        } else if ($error instanceof NotImplmentationException) {
-            http_response_code($error->getCode());
-            echo $error->getMessage();
+            // http_response_code($error->getCode());
+        } catch (Exception $err) {
+            http_response_code(500);
+            print_r($err);
         }
     }
 
