@@ -19,12 +19,13 @@ export class AppComponent implements OnInit {
     chartType: 'PieChart',
     dataTable: [
       ['Genero', 'Percentual'],
-      ['masculino', 1],
-      ['Feminino', 1]
+      ['Carregando...', 1],
+      ['Carregando...', 1]
     ],
     options: { 
-      title: 'Gênero',
+      title: 'Carregando...',
       backgroundColor: '#000000',
+      height: 300,
       animation:{
         duration: 1000,
         easing: 'out',
@@ -38,18 +39,42 @@ export class AppComponent implements OnInit {
     chartType: 'ColumnChart',
     dataTable: [
       ['Expressão', 'Percentual'],
-      ['Happy', 1],
-      ['Neutral', 1],
-      ['Sad', 1]
+      ['Carregando...', 1],
+      ['Carregando...', 1],
+      ['Carregando...', 1]
     ],
     options: { 
-      title: 'Expressões',
+      title: 'Carregando...',
       backgroundColor: '#000000',
+      height: 300,
       animation:{
         duration: 1000,
         easing: 'out',
         startup: true
-      }
+      },
+      colors: ['#e0440e', '#e6693e', '#ec8f6e', '#f3b49f', '#f6c7b6']
+    },
+  };
+
+  public age_all: GoogleChartInterface = {
+    chartType: 'ColumnChart',
+    dataTable: [
+      ['Idade', 'total'],
+      ['Carregando...', 1],
+      ['Carregando...', 1],
+      ['Carregando...', 1],
+      ['Carregando...', 1]
+    ],
+    options: { 
+      title: 'Carregando...',
+      backgroundColor: '#000000',
+      height: 400,
+      animation:{
+        duration: 1000,
+        easing: 'out',
+        startup: true
+      },
+      colors: ['#e0440e']
     },
   };
 
@@ -65,6 +90,7 @@ export class AppComponent implements OnInit {
       this.getFeedback();
       this.getGender();
       this.getExpressao();
+      this.getAgeAll();
     }, 3000);
   }
 
@@ -108,8 +134,9 @@ export class AppComponent implements OnInit {
         chartType: 'PieChart',
         dataTable: this.gender.dataTable,
         options: { 
-          title: 'Gênero',
+          title: 'Gêneros detectados',
           backgroundColor: '#000000',
+          height: 300,
           animation:{
             duration: 1000,
             easing: 'out',
@@ -133,13 +160,41 @@ export class AppComponent implements OnInit {
         chartType: 'ColumnChart',
         dataTable: this.expression.dataTable,
         options: { 
-          title: 'Expressões',
+          title: 'Expressões detectadas',
+          height: 300,
           backgroundColor: '#000000',
           animation:{
             duration: 1000,
             easing: 'out',
             startup: true
-          }
+          },
+          colors: ['#e0440e', '#e6693e', '#ec8f6e', '#f3b49f', '#f6c7b6']
+        },
+      }
+    }
+  }
+
+  private async getAgeAll() {
+    const age_all = await this.http.get('http://localhost:3000/age_all').toPromise() as any;
+    if (age_all && age_all.length > 0) {
+      this.age_all.dataTable = [];
+      age_all.forEach(gend => {
+        this.age_all.dataTable.push([gend.idade , gend.total]);
+      });
+      this.age_all.dataTable.unshift(['Idade', 'total']);
+      this.age_all = {
+        chartType: 'ColumnChart',
+        dataTable: this.age_all.dataTable,
+        options: { 
+          title: 'Idades detectadas',
+          height: 400,
+          backgroundColor: '#000000',
+          animation:{
+            duration: 1000,
+            easing: 'out',
+            startup: true
+          },
+          colors: ['#e0440e', '#e6693e', '#ec8f6e', '#f3b49f', '#f6c7b6']
         },
       }
     }
@@ -151,6 +206,14 @@ export class AppComponent implements OnInit {
         return 'fa-meh-blank';
       case 'happy':
         return 'fa-smile-beam';
+      case 'surprised':
+        return 'fa-surprise';
+      case 'sad':
+        return 'fa-frown';
+      case 'fa-angry':
+        return 'fa-angry';
+      case 'disgusted':
+        return 'fa-meh-rolling-eyes';
     }
   }
 }

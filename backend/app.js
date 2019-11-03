@@ -65,6 +65,17 @@ app.get('/age', async (req, res) => {
     res.send(age);
 });
 
+app.get('/age_all', async (req, res) => {
+    const connection = await pool.getConnection();
+    const age = await connection.query(
+        `SELECT COUNT(t0.age) total, ROUND(t0.age) idade FROM face t0
+        WHERE t0.age != -1
+        GROUP BY ROUND(t0.age)`
+    );
+    connection.end();
+    res.send(age);
+});
+
 app.get('/feedback', async (req, res) => {
     const connection = await pool.getConnection();
     const [feedback] = await connection.query(
