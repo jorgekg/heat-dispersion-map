@@ -33,7 +33,7 @@ camera = cv2.VideoCapture(0)
 first = True
 
 while True:
-    try:
+    # try:
         bd = pymysql.connect(host=application['db']['host'],
                              user=application['db']['user'],
                              password=application['db']['password'],
@@ -60,7 +60,7 @@ while True:
             # loop on face detected
             for (x, y, w, h) in faces:
 
-                try:
+                # try:
                     cursor = bd.cursor()
                     cursor.execute('SELECT MAX(id) + 1 AS id FROM face')
                     faceData = cursor.fetchone()
@@ -72,11 +72,11 @@ while True:
                         faceData['id']) + ".jpg", imageOfGrayScale[(y - 40): (y + h) + 40, (x - 20): (x + w) + 20])
                     bd.commit()
                     time.sleep(0.5)
-                except:
-                    bd.rollback()
-                    print('not write face or not save on disk')
-                    time.sleep(10)
+                # except:
+                #     bd.rollback()
+                #     print('not write face or not save on disk')
+                #     time.sleep(10)
         bd.close()
-    except:
-        print('ocurre a internal erro')
-        time.sleep(1)
+    # except:
+    #     print('ocurre a internal erro')
+    #     time.sleep(1)

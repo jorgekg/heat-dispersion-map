@@ -1,0 +1,38 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="row">
+        <div class="col-3 card-item">
+          <div class="title">
+            {{faces}}
+          </div>
+          faces identificadas
+        </div>
+        <div class="col-3 card-item">
+          <div class="title">
+            {{person}}
+          </div>
+          pessoas identificadas
+        </div>
+        <div class="col-3 card-item">
+          <div class="title">
+            {{age}}
+          </div>
+          anos de idade média
+        </div>
+        <div class="col-3 card-item">
+          <div class="title">
+            <i class="fas {{getFeedbackIcon(feedback)}}"></i>
+          </div>
+          satisfação
+        </div>
+        <div class="col-6 card-item">
+            <google-chart [data]="gender"></google-chart>
+        </div>
+        <div class="col-6 card-item">
+            <google-chart [data]="expression"></google-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
