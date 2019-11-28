@@ -16,13 +16,13 @@ def faceExpression():
 def imageProcessable():
   subprocess.call('python image-processable/__init__.py')
 
-faceDetectionThread = threading.Thread(target=faceDetection)
+# faceDetectionThread = threading.Thread(target=faceDetection)
 faceRecognitionThread = threading.Thread(target=faceRecognition) 
 faceGenderAndAgeThread = threading.Thread(target=faceGenderAndAge)
 faceExpressionThread = threading.Thread(target=faceExpression)
 imageProcessableThread = threading.Thread(target=imageProcessable)
 
-faceDetectionThread.start()
+# faceDetectionThread.start()
 faceRecognitionThread.start()
 faceGenderAndAgeThread.start()
 faceExpressionThread.start()

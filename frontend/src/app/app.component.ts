@@ -179,7 +179,7 @@ export class AppComponent implements OnInit {
     if (age_all && age_all.length > 0) {
       this.age_all.dataTable = [];
       age_all.forEach(gend => {
-        this.age_all.dataTable.push([gend.idade , gend.total]);
+        this.age_all.dataTable.push([`${gend.idade} anos` , gend.total]);
       });
       this.age_all.dataTable.unshift(['Idade', 'total']);
       this.age_all = {

@@ -49,10 +49,10 @@ while True:
         image = cv2.flip(image, 1, 0)
 
         # set imagem to gray scale
-        imageOfGrayScale = adjust_gamma(image)
+        imageOfGrayScale = adjust_gamma(image, 1.1)
 
         # detect face on multi scale
-        faces = face_detector.detectMultiScale(imageOfGrayScale, 1.3, 5)
+        faces = face_detector.detectMultiScale(imageOfGrayScale, 1.2, 5)
 
         # verify face exists
         if (len(faces) != 0):
@@ -69,7 +69,7 @@ while True:
                     print("Face detected saved ", faceData['id'])
                     # write on bucked image
                     cv2.imwrite("bucked/faces/dataset." + str(
-                        faceData['id']) + ".jpg", imageOfGrayScale[(y - 40): (y + h) + 40, (x - 20): (x + w) + 20])
+                        faceData['id']) + ".jpg", imageOfGrayScale[(y - 60): (y + h) + 60, (x - 60): (x + w) + 40])
                     bd.commit()
                     time.sleep(0.5)
                 # except:
